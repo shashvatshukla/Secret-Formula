@@ -20,6 +20,8 @@ class MainHandler(webapp2.RequestHandler):
     def get(self):
         self.response.write('Hello world!')
 
-app = webapp2.WSGIApplication([
-    ('/', MainHandler)
-], debug=True)
+class Login(webapp2.RequestHandler):
+    def get(self):
+        self.response.write('This is supposed to be some kind of login?')
+
+app = webapp2.WSGIApplication([('/', MainHandler), ('/login', Login)], debug=True)
