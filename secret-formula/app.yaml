@@ -12,9 +12,6 @@ handlers:
 - url: /
   script: main.app
 
-- url: /login
-  script: main.app
-
 - url: /.*
   script: main.app
   login: required

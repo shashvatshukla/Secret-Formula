@@ -13,22 +13,51 @@ class Webpage(webapp2.RequestHandler):
         tmp = jjenv.get_template(self.page)
         self.response.write(tmp.render(args))
 
-class AuthWebpage(Webpage):
-    def get(self):
-        user = users.get_current_user()
-        super(AuthWebpage, self).get({'userid': user.nickname()})
-
 class Main(Webpage):
     page = 'Main.html'
-    url = '/'
+    url = ''
 
-class FormMgr(AuthWebpage):
+class FormMgr(Webpage):
     page = 'FormsMgr.html'
-    url = '/forms'
+    url = 'forms'
+    
+    def get(self):
+        # get the currently logged in user, and find the corresponding Asker entity
+        # after which, we load the name of each form that has this Asker as its parent
+        
+        # if the user doesn't exist in the datastore yet (e.g. first time)
+        #     then redirect to a new page to create an 'account' (Asker entity)
+        user = users.get_current_user()
+        super(FormMgr, self).get({'userid': user.nickname()})
+
+class FormEdit(Webpage):
+    page = 'FormEdit.html'
+    url = 'editform'
+    
+    def get(self):
+        # should not directly access this, use POST from form mgr
+        self.redirect('../' + FormMgr.url)
+    
+    def post(self):
+        pass
+
+
+class AnswerForm(Webpage):
+    page = 'Answer.html'
+    url = 'submitform/' # TODO append form ID and stuff 
+
+
+class ViewResponse(Webpage):
+    page = 'Record.html'
+    url = 'viewresponse'
+    
+    # we can make this work the same way as formedit, make it only accessible via POST 
+    
+
 
 class Code(Webpage):
     page = 'Code.html'
-    url = '/code'
+    url = 'code'
     
     def get(self):
         super(Code, self).get()
@@ -45,11 +74,11 @@ class Code(Webpage):
         #g.name = "Test Form 2"
         #g.dl = datetime.datetime.now()
         #g.put()
-        
+        q = Question()
     
 
-pagec = (Main, FormMgr, Code)
-pages = [(i.url, i) for i in pagec]
+pagec = (Main, FormMgr, FormEdit, AnswerForm, ViewResponse, Code)
+pages = [('/' + i.url, i) for i in pagec]
 
 
 app = webapp2.WSGIApplication(pages, debug=True)
