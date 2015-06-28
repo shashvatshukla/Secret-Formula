@@ -5,11 +5,17 @@
 <title>Secret Formula</title>
 </head>
 <body>
-Loads the given form for the respondent, so that they may fill up the form to submit
+<br>Current Form ID: {{form.key.urlsafe()}}
+<br>Current Form Title:  {{form.name}}
+<br>Form Deadline: {{form.dl}}
 
+<form>
 {% for q in questions %}
-
+<!-- normally there would be a lot of switch case to account for the different types,
+	but for this milestone we are assuming type 0 - free response for all questions -->
+{{q.qtext}}<br><input type="text" name="{{q.qno}}">
 {% endfor %}
-
+<input type="submit" value="Submit">
+</form>
 </body>
 </html>

@@ -10,29 +10,19 @@
 <!-- Need to load: -->
 <!-- Form properties e.g. name, deadline with respective editors -->
 <form>
-Form Title:<br>
-<input type="text" name="title">
+Form Title: <input type="text" name="title" value="{{form.name}}">
 <br>
-Start Date:<br>
-<input type="date" name="startdate">
-<br>
-End Date:<br>
-<input type="date" name="enddate">
+End Date: <input type="date" name="enddate" value="{{form.dl}}">
 
-<!-- List of questions, with editors for each question -->
-
-
-
-
-
-<input type="submit" value="Submit">
+<button type="Submit">Save Changes</button>
+<button type="Reset">Reset Changes</button>
 </form>
 
+<!-- List of questions, with editors for each question -->
+{% for q in questions %}
+{% endfor %}
 
+<button type="button">New Question</button>
 
-
-<!-- Save/Cancel buttons  -->
-<button type="button">Save</button>
-<button type="button">Cancel</button>
 </body>
 </html>

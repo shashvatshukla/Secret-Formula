@@ -13,7 +13,8 @@ class Form(Model):
 
 
 class Question(Model):  
-    qntext  = StringProperty()
+    qno     = IntegerProperty()
+    qtext   = StringProperty()
     type    = IntegerProperty() # need to define further after this milestone
     # choices for questions such as check box, radio buttons etc. blank for free response
     options = StringProperty(repeated=True)

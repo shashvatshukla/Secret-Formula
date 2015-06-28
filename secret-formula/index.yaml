@@ -8,6 +8,11 @@ indexes:
   - name: dl
     direction: desc
 
+- kind: Question
+  ancestor: yes
+  properties:
+  - name: qno
+
 # This index.yaml is automatically updated whenever the dev_appserver
 # detects that a new type of query is run.  If you want to manage the
 # index.yaml file manually, remove the above marker line (the line

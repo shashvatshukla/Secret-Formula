@@ -7,12 +7,10 @@
 
 </head>
 <body>
-Overview of forms created
 <br>
 Logged in as: {{ userid|escape }}
 
-<table>
-<tr><td>Title</td><td>Deadline</td><td>Edit</td><td>Responses</td></tr>
+<table><tr><th>Title</th><th>Deadline</th><th>Edit</th><th>Responses</th></tr>
 {% for f in forms %}
 <tr>
 <td>
@@ -28,7 +26,7 @@ Logged in as: {{ userid|escape }}
 <button type="button">View Responses</button>
 </td>
 <td>
-<input type="text" name="{{'link ' ~ f.name}}" value="{{'http://secret-formula.appspot.com/form/' ~ f.key.id()}}">
+<input type="text" name="{{'link ' ~ f.name}}" value="{{'http://secret-formula.appspot.com/answerform?id=' ~ f.key.urlsafe()}}">
 </td>
 </tr>
 {% endfor %}

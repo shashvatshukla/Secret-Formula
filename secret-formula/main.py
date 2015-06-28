@@ -41,15 +41,21 @@ class FormEdit(Webpage):
         self.redirect('../' + FormMgr.url)
     
     def post(self):
-        pass
+        fid = self.request.get("id")
+        k = Key(urlsafe=fid)
+        qq = gql("select * from Question where ancestor is :1 order by qno", k)
+        super(AnswerForm, self).get({'form': k.get(), 'questions': qq})
 
 
 class AnswerForm(Webpage):
     page = 'Answer.html'
-    url = 'form/' # TODO append form ID and stuff
+    url = 'answerform'
     
     def get(self):
-        super(AnswerForm, self).get({}) 
+        fid = self.request.get("id")
+        k = Key(urlsafe=fid)
+        qq = gql("select * from Question where ancestor is :1 order by qno", k)
+        super(AnswerForm, self).get({'form': k.get(), 'questions': qq})
 
 
 class ViewResponse(Webpage):
