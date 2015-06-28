@@ -28,7 +28,7 @@ Logged in as: {{ userid|escape }}
 <button type="button">View Responses</button>
 </td>
 <td>
-<input type="text" name="{{'link ' ~ f.name}}" value="{{'http://secret-formula.appspot.com/form/' ~ f.key}}">
+<input type="text" name="{{'link ' ~ f.name}}" value="{{'http://secret-formula.appspot.com/form/' ~ f.key.id()}}">
 </td>
 </tr>
 {% endfor %}

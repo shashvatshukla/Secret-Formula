@@ -46,15 +46,22 @@ class FormEdit(Webpage):
 
 class AnswerForm(Webpage):
     page = 'Answer.html'
-    url = 'submitform/' # TODO append form ID and stuff 
+    url = 'form/' # TODO append form ID and stuff
+    
+    def get(self):
+        super(AnswerForm, self).get({}) 
 
 
 class ViewResponse(Webpage):
     page = 'Record.html'
     url = 'viewresponse'
     
-    # we can make this work the same way as formedit, make it only accessible via POST 
+    def get(self):
+        # should not directly access this, use POST from form mgr
+        self.redirect('../' + FormMgr.url)
     
+    def post(self):
+        pass
 
 
 class Code(Webpage):
@@ -76,7 +83,7 @@ class Code(Webpage):
         #g.name = "Test Form 2"
         #g.dl = datetime.datetime.now()
         #g.put()
-        q = Question()
+        #q = Question()
     
 
 pagec = (Main, FormMgr, FormEdit, AnswerForm, ViewResponse, Code)
