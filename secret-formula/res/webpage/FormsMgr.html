@@ -8,5 +8,28 @@
 Overview of forms created
 <br>
 Logged in as: {{ userid|escape }}
+
+<table>
+{% for f in forms %}
+<tr>
+<td>
+Name
+</td>
+<td>
+Deadline
+</td>
+<td>
+Edit Form
+</td>
+<td>
+View Responses
+</td>
+<td>
+Link to give to respondents?
+</td>
+</tr>
+{% endfor %}
+</table>
+
 </body>
 </html>

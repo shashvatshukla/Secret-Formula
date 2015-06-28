@@ -28,7 +28,7 @@ class FormMgr(Webpage):
         # if the user doesn't exist in the datastore yet (e.g. first time)
         #     then redirect to a new page to create an 'account' (Asker entity)
         user = users.get_current_user()
-        super(FormMgr, self).get({'userid': user.nickname()})
+        super(FormMgr, self).get({'userid': user.nickname(), 'forms': [1,2,3]})
 
 class FormEdit(Webpage):
     page = 'FormEdit.html'
