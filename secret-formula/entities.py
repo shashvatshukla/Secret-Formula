@@ -21,5 +21,6 @@ class Question(Model):
 
 
 class Response(Model):
-    subID   = IntegerProperty() # auto_increment, TODO implement
+    subID   = IntegerProperty()
+    qno     = IntegerProperty()
     ans     = StringProperty() # every response type can widen to String

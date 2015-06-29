@@ -105,6 +105,7 @@ class Submitted(Webpage):
             ans = self.request.get(str(i))
             r = Response(parent=fk)
             r.subID = subid
+            r.qno = i
             r.ans = ans
             r.put()
         super(Submitted, self).get()
@@ -119,8 +120,17 @@ class ViewResponse(Webpage):
         self.redirect('../' + FormMgr.url)
     
     def post(self):
-        pass
-
+        fid = self.request.get("id")
+        fk = Key(urlsafe=fid)
+        f = fk.get()
+        qq = gql("select * from Question where ancestor is :1 order by qno", fk)
+        fk = Key(urlsafe=fid)
+        idq = gql("select * from Response where ancestor is :1 order by subID desc", fk)
+        tbl = []
+        for i in sorted(list(set([i.subID for i in idq.iter()]))):
+            rq = gql("select * from Response where subID = :1 order by qno", i)
+            tbl += [[j.ans for j in rq.iter()]] 
+        super(ViewResponse, self).get({'form': f, 'qns': qq, 'tbl': tbl})
 
 class Code(Webpage):
     page = 'Code.html'

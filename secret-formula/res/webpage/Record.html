@@ -5,8 +5,28 @@
 <title>Secret Formula</title>
 </head>
 <body>
-<!-- Page to view responses for a form -->
+<br>
+<form method="get" action="forms">
+<button type="Submit">Return to Forms</button>
+</form>
+<br><br>
+Displaying responses for form: {{form.name}} 
+<br><br><br>
 
+<table>
+{% for q in qns %}
+<th>{{q.qtext}}</th>
+{% endfor %}
+{% for i in tbl %}
+<tr>
+{% for j in i %}
+<td>
+{{j}}
+</td>
+{% endfor %}
+</tr>
+{% endfor %}
+</table>
 
 <!-- Convert 2D python array into a html table -->
 <!-- 
@@ -23,10 +43,6 @@ def gen_html(array):
 	return HTML
 
 -->
-<!-- {% for q in responses %} -->
-<!-- {% endfor %} -->
-
-
 
 </body>
 </html>
