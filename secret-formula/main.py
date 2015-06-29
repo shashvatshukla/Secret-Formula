@@ -98,9 +98,17 @@ class Submitted(Webpage):
     
     def post(self):
         fid = self.request.get("id")
-        qno = self.request.get("qno")
-        ans = [self.request.get(str(i+1)) for i in range(qno)]
-        # insert answers into datastore
+        fk = Key(urlsafe=fid)
+        qno = int(self.request.get("qno"))
+        subid = 1+gql("select subID from Response order by subID desc limit 1").get().subID
+        for i in range(qno):
+            ans = self.request.get(str(i))
+            r = Response(parent=fk)
+            r.subID = subid
+            r.ans = ans
+            r.put()
+        super(Submitted, self).get()
+        
 
 class ViewResponse(Webpage):
     page = 'Record.html'
@@ -134,6 +142,10 @@ class Code(Webpage):
         #g.dl = datetime.datetime.now()
         #g.put()
         #q = Question()
+        #r = Response()
+        #r.subID = 0
+        #r.ans = "Placeholder response"
+        #r.put()
     
 
 pagec = (Main, FormMgr, FormEdit, AnswerForm, Submitted, ViewResponse, Code)
