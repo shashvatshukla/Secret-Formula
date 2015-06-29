@@ -22,6 +22,7 @@ Logged in as: {{ userid }}
 <td>
 <form method="post" action="editform">
 <input type="hidden" name="id" value="{{f.key.urlsafe()}}">
+<input type="hidden" name="type" value="0">
 <button type="Submit">Edit Form</button>
 </form>
 </td>

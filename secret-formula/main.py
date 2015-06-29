@@ -41,10 +41,35 @@ class FormEdit(Webpage):
         self.redirect('../' + FormMgr.url)
     
     def post(self):
+        t = int(self.request.get("type"))
         fid = self.request.get("id")
         k = Key(urlsafe=fid)
         qq = gql("select * from Question where ancestor is :1 order by qno", k)
-        super(FormEdit, self).get({'form': k.get(), 'questions': qq})
+        
+        if t == 1:
+            # change to metadata
+            f = k.get()
+            f.name = self.request.get("title")
+            f.dl = self.request.get("enddate")
+            f.put()
+            
+        if t == 2:
+            # change to existing question
+            qk = Key(urlsafe=self.request.get("qid"))
+            qn = qk.get()
+            nt = self.request.get("qtext")
+            if qn.qtext != nt: # if nothing changed, we don't waste an unnecessary write
+                qn.qtext = nt
+                qn.put()
+
+        if t == 3:
+            # new question added
+            qn = Question(parent=Key(urlsafe=self.request.get("id")))
+            qn.qtext = self.request.get("qt")
+            qn.qno = int(self.request.get("qno"))
+            qn.put()
+            
+        super(FormEdit, self).get({'type': t, 'form': k.get(), 'questions': qq})
 
 
 class AnswerForm(Webpage):
@@ -63,7 +88,7 @@ class Submitted(Webpage):
     
     def get(self):
         pass
-        # not supposed to be accessed via GET, but also no meaningful redirect
+        # not supposed to be accessed via GET, but also no meaningful redirect, so meh
     
     def post(self):
         fid = self.request.get("id")

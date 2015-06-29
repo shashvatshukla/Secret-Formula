@@ -5,25 +5,40 @@
 <title>Secret Formula</title>
 </head>
 <body>
-<!-- Loads a form editor -->
-
-<!-- Need to load: -->
-<!-- Form properties e.g. name, deadline with respective editors -->
-<form method="post" action="/forms">
+<form method="post" action="editform">
 Form Title: <input type="text" name="title" value="{{form.name}}">
 <br>
 End Date: <input type="date" name="enddate" value="{{form.dl}}">
 
+<input type="hidden" name="id" value="{{form.key.urlsafe()}}">
+<input type="hidden" name="type" value="1">
 <button type="Submit">Save Changes</button>
 <button type="Reset">Reset Changes</button>
 </form>
 
-<!-- List of questions, with editors for each question -->
+<table>
+<tr><td>
 {% for q in questions %}
+<form method="post" action="editform">
+<input type="text" name="qtext" value="{{q.qtext}}">
 
+<input type="hidden" name="id" value="{{form.key.urlsafe()}}">
+<input type="hidden" name="qid" value="{{q.key.urlsafe()}}">
+<input type="hidden" name="type" value="2">
+<button type="Submit">Update Question Text</button>
+</form>
 {% endfor %}
+</td></tr>
+</table>
 
-<button type="button">New Question</button>
+<form method="post" action="editform">
+<input type="text" name="qt" value="New Question Text...">
+
+<input type="hidden" name="qno" value="{{questions.count()}}">
+<input type="hidden" name="id" value="{{form.key.urlsafe()}}">
+<input type="hidden" name="type" value="3">
+<button type="Submit">Add New Question</button>
+</form>
 
 </body>
 </html>
