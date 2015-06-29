@@ -44,7 +44,7 @@ class FormEdit(Webpage):
         fid = self.request.get("id")
         k = Key(urlsafe=fid)
         qq = gql("select * from Question where ancestor is :1 order by qno", k)
-        super(AnswerForm, self).get({'form': k.get(), 'questions': qq})
+        super(FormEdit, self).get({'form': k.get(), 'questions': qq})
 
 
 class AnswerForm(Webpage):
@@ -57,6 +57,19 @@ class AnswerForm(Webpage):
         qq = gql("select * from Question where ancestor is :1 order by qno", k)
         super(AnswerForm, self).get({'form': k.get(), 'questions': qq})
 
+class Submitted(Webpage):
+    page = 'Submit.html'
+    url = 'submitted'
+    
+    def get(self):
+        pass
+        # not supposed to be accessed via GET, but also no meaningful redirect
+    
+    def post(self):
+        fid = self.request.get("id")
+        qno = self.request.get("qno")
+        ans = [self.request.get(str(i+1)) for i in range(qno)]
+        # insert answers into datastore
 
 class ViewResponse(Webpage):
     page = 'Record.html'
@@ -92,7 +105,7 @@ class Code(Webpage):
         #q = Question()
     
 
-pagec = (Main, FormMgr, FormEdit, AnswerForm, ViewResponse, Code)
+pagec = (Main, FormMgr, FormEdit, AnswerForm, Submitted, ViewResponse, Code)
 pages = [('/' + i.url, i) for i in pagec]
 
 

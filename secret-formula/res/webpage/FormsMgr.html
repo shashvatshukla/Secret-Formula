@@ -8,7 +8,7 @@
 </head>
 <body>
 <br>
-Logged in as: {{ userid|escape }}
+Logged in as: {{ userid }}
 
 <table><tr><th>Title</th><th>Deadline</th><th>Edit</th><th>Responses</th></tr>
 {% for f in forms %}
@@ -20,10 +20,16 @@ Logged in as: {{ userid|escape }}
 {{f.dl}}
 </td>
 <td>
-<button type="button">Edit Form</button>
+<form method="post" action="/editform">
+<input type="hidden" name="id" value="{{f.key.urlsafe()}}">
+<button type="Submit">Edit Form</button>
+</form>
 </td>
 <td>
-<button type="button">View Responses</button>
+<form method="post" action="/viewresponse">
+<input type="hidden" name="id" value="{{f.key.urlsafe()}}">
+<button type="Submit">View Responses</button>
+</form>
 </td>
 <td>
 <input type="text" name="{{'link ' ~ f.name}}" value="{{'http://secret-formula.appspot.com/answerform?id=' ~ f.key.urlsafe()}}">

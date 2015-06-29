@@ -9,7 +9,7 @@
 
 <!-- Need to load: -->
 <!-- Form properties e.g. name, deadline with respective editors -->
-<form>
+<form method="post" action="/forms">
 Form Title: <input type="text" name="title" value="{{form.name}}">
 <br>
 End Date: <input type="date" name="enddate" value="{{form.dl}}">
@@ -20,6 +20,7 @@ End Date: <input type="date" name="enddate" value="{{form.dl}}">
 
 <!-- List of questions, with editors for each question -->
 {% for q in questions %}
+
 {% endfor %}
 
 <button type="button">New Question</button>
