@@ -22,15 +22,21 @@ class FormMgr(Webpage):
     url = 'forms'
     
     def get(self):
-        # get the currently logged in user, and find the corresponding Asker entity
-        # after which, we load the name of each form that has this Asker as its parent
-        
-        # if the user doesn't exist in the datastore yet (e.g. first time)
-        #     then redirect to a new page to create an 'account' (Asker entity)
         user = users.get_current_user()
-        pk = Key('Asker', "TestGuy")
+        pk = Key('Asker', user.nickname())
+        a = pk.get()
+        if a == None:
+            a = Asker(id=user.nickname())
+            a.put()
         query = gql("select * from Form where ancestor is :1 order by dl desc", pk)
         super(FormMgr, self).get({'userid': user.nickname(), 'forms': query})
+    
+    def post(self):
+        f = Form(parent=Key('Asker', users.get_current_user().nickname()))
+        f.name = self.request.get("title")
+        f.dl = datetime.datetime.now()
+        f.put()
+        self.get()
 
 class FormEdit(Webpage):
     page = 'FormEdit.html'

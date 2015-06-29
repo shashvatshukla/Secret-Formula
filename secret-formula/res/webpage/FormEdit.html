@@ -5,9 +5,14 @@
 <title>Secret Formula</title>
 </head>
 <body>
+<br>
+<form method="get" action="forms">
+<button type="Submit">Return to Forms</button>
+</form>
+<br><br><br>
 <form method="post" action="editform">
 Form Title: <input type="text" name="title" value="{{form.name}}">
-<br>
+<br><br>
 End Date: <input type="date" name="enddate" value="{{form.dl}}">
 
 <input type="hidden" name="id" value="{{form.key.urlsafe()}}">
@@ -15,6 +20,9 @@ End Date: <input type="date" name="enddate" value="{{form.dl}}">
 <button type="Submit">Save Changes</button>
 <button type="Reset">Reset Changes</button>
 </form>
+
+<br><br><br>
+<b>Questions</b><br>
 
 <table>
 <tr><td>

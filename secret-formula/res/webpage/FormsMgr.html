@@ -9,8 +9,9 @@
 <body>
 <br>
 Logged in as: {{ userid }}
+<br><br><br>
 
-<table><tr><th>Title</th><th>Deadline</th><th>Edit</th><th>Responses</th></tr>
+<table><tr><th>Title</th><th>Deadline</th><th>Edit</th><th>Responses</th><th>Link to Give</th></tr>
 {% for f in forms %}
 <tr>
 <td>
@@ -38,6 +39,12 @@ Logged in as: {{ userid }}
 </tr>
 {% endfor %}
 </table>
+
+<br><br><br>
+<form method="post" action="forms">
+<input type="text" name="title" value="New Form Title">
+<button type="Submit">Create New Form</button>
+</form>
 
 </body>
 </html>
