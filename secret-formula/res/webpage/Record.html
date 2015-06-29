@@ -5,10 +5,28 @@
 <title>Secret Formula</title>
 </head>
 <body>
-Page to view responses for a form
+<!-- Page to view responses for a form -->
 
-{% for q in responses %}
-{% endfor %}
+
+<!-- Convert 2D python array into a html table -->
+<!-- 
+def gen_html(array):
+	HTML=""
+	row_count=1
+	for line in array:
+		TH=['pac'+str(row_count)]
+		for word in line.split():
+			TH.append( '<TH>'+word+'</TH>' )
+		ROW="".join(th for th in TH)
+		HTML+="<TR>"+ROW+"</TR>\n"
+		row_count+=1
+	return HTML
+
+-->
+<!-- {% for q in responses %} -->
+<!-- {% endfor %} -->
+
+
 
 </body>
 </html>
