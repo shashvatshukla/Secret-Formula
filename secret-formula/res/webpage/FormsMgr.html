@@ -20,13 +20,13 @@ Logged in as: {{ userid }}
 {{f.dl}}
 </td>
 <td>
-<form method="post" action="/editform">
+<form method="post" action="editform">
 <input type="hidden" name="id" value="{{f.key.urlsafe()}}">
 <button type="Submit">Edit Form</button>
 </form>
 </td>
 <td>
-<form method="post" action="/viewresponse">
+<form method="post" action="viewresponse">
 <input type="hidden" name="id" value="{{f.key.urlsafe()}}">
 <button type="Submit">View Responses</button>
 </form>
