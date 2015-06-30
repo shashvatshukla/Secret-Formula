@@ -11,15 +11,15 @@
 Logged in as: {{ userid }}
 <br><br><br>
 
-<table><tr><th>Title</th><th>Deadline</th><th>Edit</th><th>Responses</th><th>Link to Give</th></tr>
+<table><tr><th>Title</th><!--<th>Deadline</th>--><th>Edit</th><th>Responses</th><th>Link to Give</th></tr>
 {% for f in forms %}
 <tr>
 <td>
 {{f.name}}
-</td>
+</td><!-- 
 <td>
 {{f.dl}}
-</td>
+</td> -->
 <td>
 <form method="post" action="editform">
 <input type="hidden" name="id" value="{{f.key.urlsafe()}}">

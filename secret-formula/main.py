@@ -16,6 +16,9 @@ class Webpage(webapp2.RequestHandler):
 class Main(Webpage):
     page = 'Main.html'
     url = ''
+    
+    def get(self):
+        self.redirect("forms")
 
 class FormMgr(Webpage):
     page = 'FormsMgr.html'
@@ -44,7 +47,7 @@ class FormEdit(Webpage):
     
     def get(self):
         # should not directly access this, use POST from form mgr
-        self.redirect('../' + FormMgr.url)
+        self.redirect(FormMgr.url)
     
     def post(self):
         t = int(self.request.get("type"))
@@ -117,7 +120,7 @@ class ViewResponse(Webpage):
     
     def get(self):
         # should not directly access this, use POST from form mgr
-        self.redirect('../' + FormMgr.url)
+        self.redirect(FormMgr.url)
     
     def post(self):
         fid = self.request.get("id")
