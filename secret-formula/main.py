@@ -59,7 +59,7 @@ class FormEdit(Webpage):
             # change to metadata
             f = k.get()
             f.name = self.request.get("title")
-            f.dl = self.request.get("enddate")
+            #f.dl = self.request.get("enddate")
             f.put()
             
         if t == 2:
