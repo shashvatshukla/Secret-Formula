@@ -50,7 +50,9 @@ End Date: <input type="date" name="enddate" value="{{form.dl}}">
 <button type="Submit">Add New Question</button>
 </form>
 
-<form method="delete" action="editform">
+<form method="post" action="editform">
+<input type="hidden" name="type" value="4">
+<input type="hidden" name = "id" value = "{{form.key.urlsafe()}}">
 <button type = "Submit">Delete Form</button>
 </form>
 

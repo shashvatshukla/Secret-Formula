@@ -2,6 +2,7 @@ import webapp2
 import jinja2
 import os
 from google.appengine.api import users
+from google.appengine.ext import db
 
 jjenv = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + "/res/webpage"))
 
@@ -48,12 +49,7 @@ class FormEdit(Webpage):
     page = 'FormEdit.html'
     url = 'editform'
     
-	def delete(self):
-		fid = self.request.get("id")
-		ndb.Key(category, int(fid)).delete()
-		self.redirect(FormMgr.url)
 		
-	
     def get(self):
         # should not directly access this, use POST from form mgr
         self.redirect(FormMgr.url)
@@ -87,8 +83,13 @@ class FormEdit(Webpage):
             qn.qno = int(self.request.get("qno"))
             qn.put()
             
-        super(FormEdit, self).get({'type': t, 'form': k.get(), 'questions': qq})
-
+        if t == 4:
+            fid = self.request.get("id")
+            form_k = db.Key.from_path('Form',fid)
+            db.delete(form_k)
+            self.redirect(FormMgr.url)
+        else:
+            super(FormEdit, self).get({'type': t, 'form': k.get(), 'questions': qq})	
 
 class AnswerForm(Webpage):
     page = 'Answer.html'
