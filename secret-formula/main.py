@@ -40,11 +40,20 @@ class FormMgr(Webpage):
         f.dl = datetime.datetime.now()
         f.put()
         self.get()
+	
+	
+		
 
 class FormEdit(Webpage):
     page = 'FormEdit.html'
     url = 'editform'
     
+	def delete(self):
+		fid = self.request.get("id")
+		ndb.Key(category, int(fid)).delete()
+		self.redirect(FormMgr.url)
+		
+	
     def get(self):
         # should not directly access this, use POST from form mgr
         self.redirect(FormMgr.url)
