@@ -84,9 +84,9 @@ class FormEdit(Webpage):
             qn.put()
             
         if t == 4:
-            fid = self.request.get("id")
-            form_k = db.Key.from_path('Form',fid)
-            db.delete(form_k)
+            # delete
+            fid = self.request.get("id")        
+            db.delete(fid)
             self.redirect(FormMgr.url)
         else:
             super(FormEdit, self).get({'type': t, 'form': k.get(), 'questions': qq})	
