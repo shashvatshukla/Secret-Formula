@@ -1,0 +1,19 @@
+Type 0: Simple Free-Response
+
+Used for short-answer questions, that do not span more than a few words/a line.
+
+
+Type 1: Radio Button
+
+Allows the user to select exactly one option from a list of choices.
+
+
+Type 2: Check Box
+
+Similar to the Radio Button, but allows the user to select any number of options.
+
+
+Type 3: Rich Text Box 
+
+Similar to the Simple Free-Response questions, except that there is a larger input area for text.
+Used when a large amount of text response is expected.
