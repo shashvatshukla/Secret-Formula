@@ -23,6 +23,10 @@
 {{q.qtext}}<br><input type="text" name="{{q.qno}}">
 <br><br>
 {% endfor %}
+<br><br>
+Key
+(This should have been provided by the person who sent you this form)<br>
+<input type="text" name="key">
 <input type="hidden" name="qno" value="{{questions.count()}}">
 <input type="hidden" name="id" value="{{form.key.urlsafe()}}">
 <br><br>

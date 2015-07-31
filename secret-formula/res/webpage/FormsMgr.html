@@ -61,8 +61,31 @@ Logged in as: {{ userid }}
 
 <br><br><br>
 <form method="post" action="forms">
-<input type="text" name="title" value="New Form Title">
-<button type="Submit">Create New Form</button>
+<!-- <input type="text" name="title" value="New Form Title"> -->
+<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#createForm">Create New Form</button>
+
+
+<!-- Modal -->
+<div class="modal fade" id="createForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        
+        <h4 class="modal-title" id="myModalLabel">Create a new form</h4>
+      </div>
+      <div class="modal-body">
+        Form Title<br>
+        <input type="text" name="title" value="New Form Title">
+        Privacy Key<br>
+        <input type="text" name="key" value="16characters">
+      </div>
+      <div class="modal-footer">
+        
+      </div>
+    </div>
+  </div>
+</div>
+
 </form>
 
 </body>
