@@ -13,6 +13,14 @@
 Displaying responses for form: {{form.name}} 
 <br><br><br>
 
+<form method="post" action="viewresponse">
+Key: <input type="text" name="key">
+<input type="hidden" name="id" value="{{fid}}">
+<br><input type="Submit" value="Decrypt Responses">
+</form>
+
+{% if key %}
+
 <table>
 {% for q in qns %}
 <th>{{q.qtext}}</th>
@@ -28,21 +36,11 @@ Displaying responses for form: {{form.name}}
 {% endfor %}
 </table>
 
-<!-- Convert 2D python array into a html table -->
-<!-- 
-def gen_html(array):
-	HTML=""
-	row_count=1
-	for line in array:
-		TH=['pac'+str(row_count)]
-		for word in line.split():
-			TH.append( '<TH>'+word+'</TH>' )
-		ROW="".join(th for th in TH)
-		HTML+="<TR>"+ROW+"</TR>\n"
-		row_count+=1
-	return HTML
+{% else %}
 
--->
+Enter the decryption key first!
+
+{% endif %}
 
 </body>
 </html>

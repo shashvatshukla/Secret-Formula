@@ -115,12 +115,13 @@ class Submitted(Webpage):
         fk = Key(urlsafe=fid)
         qno = int(self.request.get("qno"))
         subid = 1+gql("select subID from Response order by subID desc limit 1").get().subID
+        encrypt = self.request.get("key")
         for i in range(qno):
             ans = self.request.get(str(i))
             r = Response(parent=fk)
             r.subID = subid
             r.qno = i
-            r.ans = ans
+            r.ans = ans # encrypt the answer here
             r.put()
         super(Submitted, self).get()
         
@@ -135,6 +136,7 @@ class ViewResponse(Webpage):
     
     def post(self):
         fid = self.request.get("id")
+        decrypt = self.request.get("key")
         fk = Key(urlsafe=fid)
         f = fk.get()
         qq = gql("select * from Question where ancestor is :1 order by qno", fk)
@@ -143,8 +145,8 @@ class ViewResponse(Webpage):
         tbl = []
         for i in sorted(list(set([i.subID for i in idq.iter()]))):
             rq = gql("select * from Response where subID = :1 order by qno", i)
-            tbl += [[j.ans for j in rq.iter()]] 
-        super(ViewResponse, self).get({'form': f, 'qns': qq, 'tbl': tbl})
+            tbl += [[j.ans for j in rq.iter()]] # decrypt j.ans here
+        super(ViewResponse, self).get({'fid': fid, 'key': decrypt, 'form': f, 'qns': qq, 'tbl': tbl})
 
 class Code(Webpage):
     page = 'Code.html'
