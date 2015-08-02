@@ -82,6 +82,7 @@ class FormEdit(Webpage):
             qn = Question(parent=Key(urlsafe=self.request.get("id")))
             qn.qtext = self.request.get("qt")
             qn.qno = int(self.request.get("qno"))
+            qn.type = 0 # placeholder value
             qn.put()
             
         if t == 4:
