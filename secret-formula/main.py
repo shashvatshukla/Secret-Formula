@@ -1,7 +1,7 @@
 import webapp2
 import jinja2
 import os
-import Crypto
+from Crypto.Cipher import AES
 from google.appengine.api import users
 from google.appengine.ext import db
 
@@ -116,13 +116,19 @@ class Submitted(Webpage):
         fk = Key(urlsafe=fid)
         qno = int(self.request.get("qno"))
         subid = 1+gql("select subID from Response order by subID desc limit 1").get().subID
-        encrypt = self.request.get("key")
+        encrypt_key = self.request.get("key")
+        iv = os.urandom(16)  
         for i in range(qno):
             ans = self.request.get(str(i))
             r = Response(parent=fk)
             r.subID = subid
             r.qno = i
-            r.ans = ans # encrypt the answer here
+            
+            #encryption  code
+            r.iv = iv # some data redundancy at the moment     ,    should move to an entity that stores metadata about a response to a form as a whole
+            encryption_object = AES.new(encrypt_key, AES.MODE_CBC, r.iv)  # this line and above line to be moved out of for loop
+            r.ans = (encryption_object.encrypt(ans)).encode('hex') # encrypt the answer here 
+            
             r.put()
         super(Submitted, self).get()
         
@@ -180,3 +186,5 @@ pages = [('/' + i.url, i) for i in pagec]
 
 
 app = webapp2.WSGIApplication(pages, debug=True)
+
+

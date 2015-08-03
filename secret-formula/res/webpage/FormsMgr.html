@@ -60,7 +60,7 @@ Logged in as: {{ userid }}
 
 
 <br><br><br>
-<form method="post" action="forms">
+
 <!-- <input type="text" name="title" value="New Form Title"> -->
 <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#createForm">Create New Form</button>
 
@@ -74,10 +74,13 @@ Logged in as: {{ userid }}
         <h4 class="modal-title" id="myModalLabel">Create a new form</h4>
       </div>
       <div class="modal-body">
+      <form method="post" action="forms">
         Form Title<br>
         <input type="text" name="title" value="New Form Title"><br><br>
         Privacy Key<br>
         <input type="text" name="key" value="16characters">
+        <button type="Submit">Create!</button>
+        </form>
       </div>
       <div class="modal-footer">
         
@@ -86,7 +89,7 @@ Logged in as: {{ userid }}
   </div>
 </div>
 
-</form>
+
 
 </body>
 </html>
