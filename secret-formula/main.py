@@ -42,9 +42,6 @@ class FormMgr(Webpage):
         f.dl = datetime.datetime.now()
         f.put()
         self.get()
-	
-	
-		
 
 class FormEdit(Webpage):
     page = 'FormEdit.html'
@@ -72,17 +69,22 @@ class FormEdit(Webpage):
             # change to existing question
             qk = Key(urlsafe=self.request.get("qid"))
             qn = qk.get()
-            nt = self.request.get("qtext")
-            if qn.qtext != nt: # if nothing changed, we don't waste an unnecessary write
-                qn.qtext = nt
+            ntext = self.request.get("qtext")
+            ntype = int(self.request.get("qtype"))
+            nopt = [i[:-1] if i[-1] == '\r' else i for i in self.request.get("options").split("\n") if i != '' and i != '\r']
+            # if nothing changed, we don't waste an unnecessary write
+            if qn.text != ntext or qn.type != ntype or qn.options != nopt:
+                qn.text = ntext
+                qn.type = ntype
+                qn.options = nopt
                 qn.put()
 
         if t == 3:
             # new question added
             qn = Question(parent=Key(urlsafe=self.request.get("id")))
-            qn.qtext = self.request.get("qt")
+            qn.text = self.request.get("qt")
             qn.qno = int(self.request.get("qno"))
-            qn.type = 0 # placeholder value
+            qn.type = 0 # placeholder value, defaults to text box
             qn.put()
             
         if t == 4:
@@ -114,22 +116,39 @@ class Submitted(Webpage):
     def post(self):
         fid = self.request.get("id")
         fk = Key(urlsafe=fid)
-        qno = int(self.request.get("qno"))
-        subid = 1+gql("select subID from Response order by subID desc limit 1").get().subID
+        qnos = int(self.request.get("qnos"))
         encrypt_key = self.request.get("key")
-        iv = os.urandom(16)  
-        for i in range(qno):
-            ans = self.request.get(str(i))
-            r = Response(parent=fk)
-            r.subID = subid
-            r.qno = i
+        iv = "1234567890123456" #TODO fix this os.urandom(16)
+        r = Response(parent=fk)
+        r.subID = 1+gql("select subID from Response order by subID desc limit 1").get().subID
+        #encryption  code
+        # some data redundancy at the moment,
+        # should move to an entity that stores metadata about a response to a form
+        # as a whole
+        #                Wei Liang: FIXED
+        r.iv = iv
+        encryption_object = AES.new(encrypt_key, AES.MODE_CBC, r.iv)
+        r.put()
+        
+        for i in range(qnos):
+            qtype = gql("select type from Question where ancestor is :1 and qno = :2", fk, i).get().type
+            if(qtype == 2):
+                # check box, need to handle separately
+                ans = ""
+                for j in self.request.get_all(str(i)):
+                    ans += j + ","
+                if len(ans) > 0:
+                    ans = ans[:-1]
+            else:
+                ans = self.request.get(str(i))
             
-            #encryption  code
-            r.iv = iv # some data redundancy at the moment     ,    should move to an entity that stores metadata about a response to a form as a whole
-            encryption_object = AES.new(encrypt_key, AES.MODE_CBC, r.iv)  # this line and above line to be moved out of for loop
-            r.ans = (encryption_object.encrypt(ans)).encode('hex') # encrypt the answer here 
+            a = Answer(parent=r.key)
+            a.qno = i
             
-            r.put()
+            a.ans = ans # removed temporarily so I can see the input stored correctly
+            # (encryption_object.encrypt(ans)).encode('hex') # encrypt the answer here 
+            
+            a.put()
         super(Submitted, self).get()
         
 
@@ -146,12 +165,14 @@ class ViewResponse(Webpage):
         decrypt = self.request.get("key")
         fk = Key(urlsafe=fid)
         f = fk.get()
+        # list of questions query
         qq = gql("select * from Question where ancestor is :1 order by qno", fk)
         fk = Key(urlsafe=fid)
-        idq = gql("select * from Response where ancestor is :1 order by subID desc", fk)
+        # list of user responses query
+        rq = gql("select * from Response where ancestor is :1 order by subID desc", fk)
         tbl = []
-        for i in sorted(list(set([i.subID for i in idq.iter()]))):
-            rq = gql("select * from Response where subID = :1 order by qno", i)
+        for i in sorted(list(rq.iter()), key=lambda x: x.subID):
+            rq = gql("select * from Answer where ancestor is :1 order by qno", i.key)
             tbl += [[j.ans for j in rq.iter()]] # decrypt j.ans here
         super(ViewResponse, self).get({'fid': fid, 'key': decrypt, 'form': f, 'qns': qq, 'tbl': tbl})
 

@@ -36,18 +36,32 @@ End Date: <input type="date" name="enddate" value="{{form.dl}}">
 <b>Questions</b><br>
 
 <table class = "table">
-<tr><td>
 {% for q in questions %}
+<tr><td>
 <form method="post" action="editform">
-<input type="text" name="qtext" value="{{q.qtext}}">
+<input type="text" name="qtext" value="{{q.text}}">
+<input type="radio" name="qtype" value="0" {% if q.type == 0 %}checked{% endif %}>Simple Text
+<input type="radio" name="qtype" value="1" {% if q.type == 1 %}checked{% endif %}>Radio Button
+<input type="radio" name="qtype" value="2" {% if q.type == 2 %}checked{% endif %}>Check Box
+<input type="radio" name="qtype" value="3" {% if q.type == 3 %}checked{% endif %}>Rich Text
+<br>
+{% if q.type == 1 or q.type == 2 %}
+Options (separate each option on a new line)<br>
+<textarea class="FormElement" name="options" style="width: 300px; height: 100px;">{% for i in q.options %}{{i ~ "\n"}}{% endfor %}</textarea>
+{% else %}
+<input type="hidden" name="options" value="">
+{% endif %}
+<br>
 
 <input type="hidden" name="id" value="{{form.key.urlsafe()}}">
 <input type="hidden" name="qid" value="{{q.key.urlsafe()}}">
 <input type="hidden" name="type" value="2">
-<button type="Submit">Update Question Text</button>
+<button type="Submit">Update Question</button>
 </form>
-{% endfor %}
 </td></tr>
+<tr></tr>
+{% endfor %}
+<tr></tr>
 </table>
 
 <form method="post" action="editform">

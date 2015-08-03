@@ -19,10 +19,16 @@ indexes:
   - name: subID
     direction: desc
 
-- kind: Response
+- kind: Answer
+  ancestor: yes
   properties:
-  - name: subID
   - name: qno
+
+- kind: Question
+  ancestor: yes
+  properties:
+  - name: qno
+  - name: type
 
 # This index.yaml is automatically updated whenever the dev_appserver
 # detects that a new type of query is run.  If you want to manage the
