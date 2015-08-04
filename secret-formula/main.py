@@ -4,6 +4,7 @@ import os
 from Crypto.Cipher import AES
 from google.appengine.api import users
 from google.appengine.ext import db
+import random
 
 jjenv = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + "/res/webpage"))
 
@@ -118,7 +119,11 @@ class Submitted(Webpage):
         fk = Key(urlsafe=fid)
         qnos = int(self.request.get("qnos"))
         encrypt_key = self.request.get("key")
-        iv = "1234567890123456" #TODO fix this os.urandom(16)
+        charset = "\x20\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x3e\x3f\x40\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4d\x4e\x4f\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x5b\x5c\x5d\x5e\x5f\x60\x61\x62\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x7b\x7c\x7d\x7e"
+        iv = ""
+        for i in range(16):
+            iv+=random.choice(charset)
+        #iv = "1234567890123456" #for debugging 
         r = Response(parent=fk)
         r.subID = 1+gql("select subID from Response order by subID desc limit 1").get().subID
         #encryption  code
@@ -142,10 +147,11 @@ class Submitted(Webpage):
             else:
                 ans = self.request.get(str(i))
             
+            ans += " " * (16-len(ans)%16) # make string a multiple of 16 letters for encryption
             a = Answer(parent=r.key)
             a.qno = i
             
-            a.ans = ans # removed temporarily so I can see the input stored correctly
+            a.ans = (encryption_object.encrypt(ans)).encode('hex') # removed temporarily so I can see the input stored correctly
             # (encryption_object.encrypt(ans)).encode('hex') # encrypt the answer here 
             
             a.put()
@@ -171,9 +177,14 @@ class ViewResponse(Webpage):
         # list of user responses query
         rq = gql("select * from Response where ancestor is :1 order by subID desc", fk)
         tbl = []
+        
         for i in sorted(list(rq.iter()), key=lambda x: x.subID):
+            #comment away for debugging
+            decryption_object = AES.new(decrypt,AES.MODE_CBC, i.iv)  # not sure about last input, help
+            
             rq = gql("select * from Answer where ancestor is :1 order by qno", i.key)
-            tbl += [[j.ans for j in rq.iter()]] # decrypt j.ans here
+            #tbl += [[j.ans for j in rq.iter()]] # when decryption doesnt work, debugging
+            tbl += [[decryption_object.decrypt(j.ans) for j in rq.iter()]] 
         super(ViewResponse, self).get({'fid': fid, 'key': decrypt, 'form': f, 'qns': qq, 'tbl': tbl})
 
 class Code(Webpage):
