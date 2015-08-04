@@ -178,13 +178,14 @@ class ViewResponse(Webpage):
         rq = gql("select * from Response where ancestor is :1 order by subID desc", fk)
         tbl = []
         
-        for i in sorted(list(rq.iter()), key=lambda x: x.subID):
-            #comment away for debugging
-            decryption_object = AES.new(decrypt,AES.MODE_CBC, i.iv)  # not sure about last input, help
-            
-            rq = gql("select * from Answer where ancestor is :1 order by qno", i.key)
-            #tbl += [[j.ans for j in rq.iter()]] # when decryption doesnt work, debugging
-            tbl += [[decryption_object.decrypt(j.ans) for j in rq.iter()]] 
+        if decrypt:
+            for i in sorted(list(rq.iter()), key=lambda x: x.subID):
+                #comment away for debugging
+                decryption_object = AES.new(decrypt,AES.MODE_CBC, i.iv)  # not sure about last input, help
+                
+                rq = gql("select * from Answer where ancestor is :1 order by qno", i.key)
+                #tbl += [[j.ans for j in rq.iter()]] # when decryption doesnt work, debugging
+                tbl += [[decryption_object.decrypt(j.ans) for j in rq.iter()]] 
         super(ViewResponse, self).get({'fid': fid, 'key': decrypt, 'form': f, 'qns': qq, 'tbl': tbl})
 
 class Code(Webpage):

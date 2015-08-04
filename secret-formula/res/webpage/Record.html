@@ -19,9 +19,7 @@ Key: <input type="text" name="key">
 <br><input type="Submit" value="Decrypt Responses">
 </form>
 
-{% if key %}
-
-<table>
+<table border="2">
 {% for q in qns %}
 <th>{{q.text}}</th>
 {% endfor %}
@@ -36,10 +34,8 @@ Key: <input type="text" name="key">
 {% endfor %}
 </table>
 
-{% else %}
-
+{% if not key %}
 Enter the decryption key first!
-
 {% endif %}
 
 </body>
