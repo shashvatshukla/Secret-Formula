@@ -21,7 +21,7 @@ class Main(Webpage):
     url = ''
     
     def get(self):
-        self.redirect("forms")
+        super(Main, self).get();
 
 class FormMgr(Webpage):
     page = 'FormsMgr.html'
