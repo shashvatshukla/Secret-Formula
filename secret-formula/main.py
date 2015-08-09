@@ -183,19 +183,21 @@ class ViewResponse(Webpage):
                 #tbl += [[j.ans for j in aq.iter()]] # when decryption doesnt work, debugging
                 
                 row = []
+                err = 0
                 
                 for j in aq.iter():
                     try:
                         row += [decryption_object.decrypt(j.ans.decode('hex'))]
                         row[-1].encode('utf8')
                     except UnicodeDecodeError:
-                        del row[-1]
-                        errcount += 1
+                        err = 1
+                        break
                 
-                tbl += [row]
-                #tbl += [[decryption_object.decrypt(j.ans.decode('hex')) for j in aq.iter()]]
+                if err == 0:
+                    tbl += [row]
+                else:
+                    errcount += 1
                 
-                #need to call decryption_object.decrypt in question number order (the way it was encrypted)
                 
         
         super(ViewResponse, self).get({'fid': fid, 'key': decrypt, 'form': f, 'qns': qq, 'tbl': tbl, 'err': errcount})
@@ -209,21 +211,6 @@ class Code(Webpage):
         # write arbitrary code here. treat this as your admin terminal
         # remember to delete or comment out everything after use, to avoid accidental runs
         
-        #a = Asker(id="TestGuy")
-        #a.put()
-        #f = Form(parent=Key('Asker', 'TestGuy'))
-        #f.name = "Test Form 1"
-        #f.dl = datetime.datetime.now()
-        #f.put()
-        #g = Form(parent=Key('Asker', 'TestGuy'))
-        #g.name = "Test Form 2"
-        #g.dl = datetime.datetime.now()
-        #g.put()
-        #q = Question()
-        #r = Response()
-        #r.subID = 0
-        #r.ans = "Placeholder response"
-        #r.put()
     
 
 pagec = (Main, FormMgr, FormEdit, AnswerForm, Submitted, ViewResponse, Code)

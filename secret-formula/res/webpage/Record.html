@@ -3,23 +3,32 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Secret Formula</title>
+
+<!-- calling bootstrap CDN -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+
 </head>
 <body>
-<br>
+
 <form method="get" action="forms">
-<button type="Submit">Return to Forms</button>
+<p><button type="Submit">Return to Forms</button></p>
 </form>
+<h2>View Form Responses</h2>
+<h3>Displaying responses for form: {{form.name}}</h3> 
 <br><br>
-Displaying responses for form: {{form.name}} 
-<br><br><br>
 
 <form method="post" action="viewresponse">
-Key: <input type="text" name="key">
+<p>Key: <input type="text" name="key"></p>
+<p><input type="Submit" value="Decrypt Responses"></p>
 <input type="hidden" name="id" value="{{fid}}">
-<br><input type="Submit" value="Decrypt Responses">
 </form>
 
-<table border="2">
+<table class="table">
 {% for q in qns %}
 <th>{{q.text}}</th>
 {% endfor %}
@@ -34,6 +43,7 @@ Key: <input type="text" name="key">
 {% endfor %}
 </table>
 
+<p>
 {% if not key %}
 	Enter the decryption key first!
 {% else %}
@@ -48,6 +58,7 @@ Key: <input type="text" name="key">
 		There were no corrupted entries.
 	{% endif %}
 {% endif %}
+</p>
 
 </body>
 </html>

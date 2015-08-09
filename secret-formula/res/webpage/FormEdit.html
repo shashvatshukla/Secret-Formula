@@ -14,13 +14,16 @@
 
 </head>
 <body>
+<h2>Form Editor</h2>
+
 <br>
 <form method="get" action="forms">
-<button type="Submit">Return to Forms</button>
+<p><button type="Submit">Return to Forms</button></p>
 </form>
-<br><br><br>
+
+<br><br>
 <form method="post" action="editform">
-Form Title: <input type="text" name="title" value="{{form.name}}">
+<p>Form Title: <input type="text" name="title" value="{{form.name}}"></p>
 
 <!-- <br><br>
 End Date: <input type="date" name="enddate" value="{{form.dl}}">
@@ -28,35 +31,38 @@ End Date: <input type="date" name="enddate" value="{{form.dl}}">
  
 <input type="hidden" name="id" value="{{form.key.urlsafe()}}">
 <input type="hidden" name="type" value="1">
-<button type="Submit">Save Changes</button>
-<button type="Reset">Reset Changes</button>
+
+<p><button type="Submit">Save Changes</button></p>
+<p><button type="Reset">Reset Changes</button></p>
 </form>
 
 <br><br><br>
-<b>Questions</b><br>
+<h3>Questions</h3>
 
 <table class = "table">
 {% for q in questions %}
 <tr><td>
 <form method="post" action="editform">
+<p>
 <input type="text" name="qtext" value="{{q.text}}">
 <input type="radio" name="qtype" value="0" {% if q.type == 0 %}checked{% endif %}>Simple Text
 <input type="radio" name="qtype" value="1" {% if q.type == 1 %}checked{% endif %}>Radio Button
 <input type="radio" name="qtype" value="2" {% if q.type == 2 %}checked{% endif %}>Check Box
 <input type="radio" name="qtype" value="3" {% if q.type == 3 %}checked{% endif %}>Rich Text
-<br>
+</p>
+<p>
 {% if q.type == 1 or q.type == 2 %}
 Options (separate each option on a new line)<br>
 <textarea class="FormElement" name="options" style="width: 300px; height: 100px;">{% for i in q.options %}{{i ~ "\n"}}{% endfor %}</textarea>
 {% else %}
 <input type="hidden" name="options" value="">
 {% endif %}
-<br>
+</p>
 
 <input type="hidden" name="id" value="{{form.key.urlsafe()}}">
 <input type="hidden" name="qid" value="{{q.key.urlsafe()}}">
 <input type="hidden" name="type" value="2">
-<button type="Submit">Update Question</button>
+<p><button type="Submit">Update Question</button></p>
 </form>
 </td></tr>
 <tr></tr>
@@ -65,18 +71,21 @@ Options (separate each option on a new line)<br>
 </table>
 
 <form method="post" action="editform">
+<p>
 <input type="text" name="qt" value="New Question Text...">
 
 <input type="hidden" name="qno" value="{{questions.count()}}">
 <input type="hidden" name="id" value="{{form.key.urlsafe()}}">
 <input type="hidden" name="type" value="3">
+
 <button type="Submit">Add New Question</button>
+</p>
 </form>
 
 <form method="post" action="editform">
 <input type="hidden" name = "id" value = "{{form.key.urlsafe()}}">
 <input type="hidden" name="type" value="4">
-<button type = "Submit">Delete Form</button>
+<p><button type = "Submit">Delete Form</button></p>
 </form>
 
 
