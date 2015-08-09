@@ -26,7 +26,7 @@ class Question(Model):
 class Response(Model):
     # parent is Form entity
     subID   = IntegerProperty()
-    iv      = StringProperty() #maybe you could just use the auto-generated key?
+    iv      = StringProperty()
 
 class Answer(Model):
     # parent is Response entity

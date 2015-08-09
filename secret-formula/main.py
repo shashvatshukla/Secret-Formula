@@ -126,11 +126,6 @@ class Submitted(Webpage):
         #iv = "1234567890123456" #for debugging 
         r = Response(parent=fk)
         r.subID = 1+gql("select subID from Response order by subID desc limit 1").get().subID
-        #encryption  code
-        # some data redundancy at the moment,
-        # should move to an entity that stores metadata about a response to a form
-        # as a whole
-        #                Wei Liang: FIXED
         r.iv = iv
         encryption_object = AES.new(encrypt_key, AES.MODE_CBC, r.iv)
         r.put()
@@ -151,8 +146,7 @@ class Submitted(Webpage):
             a = Answer(parent=r.key)
             a.qno = i
             
-            a.ans = (encryption_object.encrypt(ans)).encode('hex') # removed temporarily so I can see the input stored correctly
-            # (encryption_object.encrypt(ans)).encode('hex') # encrypt the answer here 
+            a.ans = (encryption_object.encrypt(ans)).encode('hex') # encrypt the answer here
             
             a.put()
         super(Submitted, self).get()
@@ -183,10 +177,10 @@ class ViewResponse(Webpage):
                 
                 decryption_object = AES.new(decrypt,AES.MODE_CBC, i.iv)  # not sure about last input, help
                 # the last input of the above line of code should be the right iv for that response
-                rq = gql("select * from Answer where ancestor is :1 order by qno", i.key)
+                aq = gql("select * from Answer where ancestor is :1 order by qno", i.key)
                 
-                tbl += [[j.ans for j in rq.iter()]] # when decryption doesnt work, debugging
-                #tbl += [[decryption_object.decrypt(j.ans) for j in rq.iter()]]
+                #tbl += [[j.ans for j in aq.iter()]] # when decryption doesnt work, debugging
+                tbl += [[decryption_object.decrypt(j.ans.decode('hex')) for j in aq.iter()]]
                 
                 #need to call decryption_object.decrypt in question number order (the way it was encrypted)
                 
