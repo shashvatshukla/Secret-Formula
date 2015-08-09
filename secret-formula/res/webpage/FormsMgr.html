@@ -42,13 +42,13 @@
 <form method="post" action="editform">
 <input type="hidden" name="id" value="{{f.key.urlsafe()}}">
 <input type="hidden" name="type" value="0">
-<button type="Submit">Edit Form</button>
+<button type="Submit" class="btn btn-default">Edit Form</button>
 </form>
 </td>
 <td>
 <form method="post" action="viewresponse">
 <input type="hidden" name="id" value="{{f.key.urlsafe()}}">
-<button type="Submit">View Responses</button>
+<button class="btn btn-default" type="Submit">View Responses</button>
 </form>
 </td>
 <td>
@@ -64,7 +64,7 @@
 <br><br><br>
 
 <!-- <input type="text" name="title" value="New Form Title"> -->
-<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#createForm">Create New Form</button>
+<button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#createForm">Create New Form</button>
 
 
 <!-- Modal -->
@@ -80,7 +80,11 @@
         Form Title<br>
         <input type="text" name="title" value="New Form Title"><br><br>
         Privacy Key<br>
-        <input type="text" name="key" value="16characterkey">
+        <input type="text" value="mysecretpassword"><br>
+        Please choose a 16 character long key.<br>
+        Please remember this key as we will not be storing it in our database.<br>
+        You are REQUIRED to send the key to all your respondents in order for them to successfully encrypt their data.<br>
+        
         <button type="Submit">Create!</button>
         </form>
       </div>
