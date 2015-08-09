@@ -172,20 +172,33 @@ class ViewResponse(Webpage):
         rq = gql("select * from Response where ancestor is :1 order by subID desc", fk)
         tbl = []
         
+        errcount = 0
+        
         if decrypt:
             for i in sorted(list(rq.iter()), key=lambda x: x.subID):
                 
-                decryption_object = AES.new(decrypt,AES.MODE_CBC, i.iv)  # not sure about last input, help
-                # the last input of the above line of code should be the right iv for that response
+                decryption_object = AES.new(decrypt,AES.MODE_CBC, i.iv)
                 aq = gql("select * from Answer where ancestor is :1 order by qno", i.key)
                 
                 #tbl += [[j.ans for j in aq.iter()]] # when decryption doesnt work, debugging
-                tbl += [[decryption_object.decrypt(j.ans.decode('hex')) for j in aq.iter()]]
+                
+                row = []
+                
+                for j in aq.iter():
+                    try:
+                        row += [decryption_object.decrypt(j.ans.decode('hex'))]
+                        row[-1].encode('utf8')
+                    except UnicodeDecodeError:
+                        del row[-1]
+                        errcount += 1
+                
+                tbl += [row]
+                #tbl += [[decryption_object.decrypt(j.ans.decode('hex')) for j in aq.iter()]]
                 
                 #need to call decryption_object.decrypt in question number order (the way it was encrypted)
                 
         
-        super(ViewResponse, self).get({'fid': fid, 'key': decrypt, 'form': f, 'qns': qq, 'tbl': tbl})
+        super(ViewResponse, self).get({'fid': fid, 'key': decrypt, 'form': f, 'qns': qq, 'tbl': tbl, 'err': errcount})
 
 class Code(Webpage):
     page = 'Code.html'

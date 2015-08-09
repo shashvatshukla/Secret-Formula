@@ -35,7 +35,18 @@ Key: <input type="text" name="key">
 </table>
 
 {% if not key %}
-Enter the decryption key first!
+	Enter the decryption key first!
+{% else %}
+	{% if err >= 1 %}
+		{% if err == 1 %}
+			There was 1 corrupted entry. 
+		{% else %}
+			There were {{err}} corrupted entries. 
+		{% endif %}
+		They could have been caused by the incorrect key being entered.
+	{% else %}
+		There were no corrupted entries.
+	{% endif %}
 {% endif %}
 
 </body>
