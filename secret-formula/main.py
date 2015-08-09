@@ -180,12 +180,17 @@ class ViewResponse(Webpage):
         
         if decrypt:
             for i in sorted(list(rq.iter()), key=lambda x: x.subID):
-                #comment away for debugging
-                decryption_object = AES.new(decrypt,AES.MODE_CBC, i.iv)  # not sure about last input, help
                 
+                decryption_object = AES.new(decrypt,AES.MODE_CBC, i.iv)  # not sure about last input, help
+                # the last input of the above line of code should be the right iv for that response
                 rq = gql("select * from Answer where ancestor is :1 order by qno", i.key)
-                #tbl += [[j.ans for j in rq.iter()]] # when decryption doesnt work, debugging
-                tbl += [[decryption_object.decrypt(j.ans) for j in rq.iter()]] 
+                
+                tbl += [[j.ans for j in rq.iter()]] # when decryption doesnt work, debugging
+                #tbl += [[decryption_object.decrypt(j.ans) for j in rq.iter()]]
+                
+                #need to call decryption_object.decrypt in question number order (the way it was encrypted)
+                
+        
         super(ViewResponse, self).get({'fid': fid, 'key': decrypt, 'form': f, 'qns': qq, 'tbl': tbl})
 
 class Code(Webpage):
