@@ -43,8 +43,8 @@ End Date: <input type="date" name="enddate" value="{{form.dl}}">
 {% for q in questions %}
 <tr><td>
 <form method="post" action="editform">
-<p>
-<input type="text" name="qtext" value="{{q.text}}">
+<input type="text" name="qtext" class="form-control" placeholder="Question Text" value="{{q.text}}">
+<input type="checkbox" name="comp" value="True" {% if q.must %}checked{% endif %}>Compulsory
 <div class="btn-group" data-toggle="buttons">
 <label class="btn btn-primary {% if q.type == 0 %}active{% endif %}">
 <input type="radio" name="qtype" value="0">Simple Text
@@ -59,7 +59,6 @@ End Date: <input type="date" name="enddate" value="{{form.dl}}">
 <input type="radio" name="qtype" value="3">Rich Text
 </label>
 </div>
-</p>
 <p>
 {% if q.type == 1 or q.type == 2 %}
 Options (separate each option on a new line)<br>
@@ -82,7 +81,7 @@ Options (separate each option on a new line)<br>
 
 <form method="post" action="editform">
 <p>
-<input type="text" name="qt" value="New Question Text...">
+<input type="text" name="qt" class="form-control" placeholder="New Question Text...">
 
 <input type="hidden" name="qno" value="{{questions.count()}}">
 <input type="hidden" name="id" value="{{form.key.urlsafe()}}">

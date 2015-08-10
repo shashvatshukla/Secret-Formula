@@ -52,7 +52,7 @@
 </form>
 </td>
 <td>
-<input type="text" name="{{'link ' ~ f.name}}" value="{{'http://secret-formula.appspot.com/answerform?id=' ~ f.key.urlsafe()}}">
+<input type="text" name="{{'link ' ~ f.key.urlsafe()}}" value="{{'http://secret-formula.appspot.com/answerform?id=' ~ f.key.urlsafe()}}">
 </td>
 </tr>
 {% endfor %}

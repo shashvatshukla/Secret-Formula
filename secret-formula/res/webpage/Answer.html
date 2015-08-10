@@ -19,7 +19,7 @@
 <form method="post" action="submitted">
 {% for q in questions %}
 <p>
-{{q.text}}<br>
+{% if q.must %}<b>(Compulsory)</b> {% endif %}{{(1+q.qno) ~ ". " ~ q.text}}<br>
 {% if q.type == 0 %}
 <input type="text" name="{{q.qno}}">
 <br>

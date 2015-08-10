@@ -17,8 +17,9 @@ class Form(Model):
 class Question(Model):  
     # parent is Form entity
     qno     = IntegerProperty()
-    text   = StringProperty()
+    text    = StringProperty()
     type    = IntegerProperty() # defined in "docs/Question Type Documentation.txt"
+    must    = BooleanProperty() # compulsory question
     # choices for questions such as check box, radio buttons etc. blank for free response
     options = StringProperty(repeated=True)
 

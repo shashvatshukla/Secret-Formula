@@ -72,11 +72,13 @@ class FormEdit(Webpage):
             qn = qk.get()
             ntext = self.request.get("qtext")
             ntype = int(self.request.get("qtype"))
+            nmust = self.request.get("comp") != ''
             nopt = [i[:-1] if i[-1] == '\r' else i for i in self.request.get("options").split("\n") if i != '' and i != '\r']
             # if nothing changed, we don't waste an unnecessary write
-            if qn.text != ntext or qn.type != ntype or qn.options != nopt:
+            if qn.text != ntext or qn.type != ntype or qn.must != nmust or qn.options != nopt:
                 qn.text = ntext
                 qn.type = ntype
+                qn.must = nmust
                 qn.options = nopt
                 qn.put()
 
@@ -85,7 +87,8 @@ class FormEdit(Webpage):
             qn = Question(parent=Key(urlsafe=self.request.get("id")))
             qn.text = self.request.get("qt")
             qn.qno = int(self.request.get("qno"))
-            qn.type = 0 # placeholder value, defaults to text box
+            qn.must = False # defaults to non-compulsory
+            qn.type = 0     # defaults to simple text
             qn.put()
             
         if t == 4:
@@ -130,8 +133,13 @@ class Submitted(Webpage):
         encryption_object = AES.new(encrypt_key, AES.MODE_CBC, r.iv)
         r.put()
         
+        to_add = []    # queue of entities to write to datastore
+        problemq = []   # invalid questions
+        
         for i in range(qnos):
-            qtype = gql("select type from Question where ancestor is :1 and qno = :2", fk, i).get().type
+            q = gql("select type, must from Question where ancestor is :1 and qno = :2", fk, i).get()
+            qtype = q.type
+            qmust = q.must
             if(qtype == 2):
                 # check box, need to handle separately
                 ans = ""
@@ -141,6 +149,8 @@ class Submitted(Webpage):
                     ans = ans[:-1]
             else:
                 ans = self.request.get(str(i))
+                if qmust and ans == '':
+                    problemq.append(i+1)
             
             ans += " " * (16-len(ans)%16) # make string a multiple of 16 letters for encryption
             a = Answer(parent=r.key)
@@ -148,8 +158,16 @@ class Submitted(Webpage):
             
             a.ans = (encryption_object.encrypt(ans)).encode('hex') # encrypt the answer here
             
-            a.put()
-        super(Submitted, self).get()
+            to_add.append(a)
+        
+        # put the datastore writes together, if something goes wrong beforehand we can skip this
+        if problemq:
+            r.key.delete()
+        else:
+            for i in to_add:
+                i.put()
+        
+        super(Submitted, self).get({'pq': problemq})
         
 
 class ViewResponse(Webpage):
