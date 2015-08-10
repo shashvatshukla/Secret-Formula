@@ -55,7 +55,11 @@
 		{% endif %}
 		They could have been caused by the incorrect key being entered.
 	{% else %}
-		There were no corrupted entries.
+		{% if err == -1 %}
+			Invalid key given. The key given must be 16 characters long, remember?
+		{% else %}
+			There were no corrupted entries.
+		{% endif %}
 	{% endif %}
 {% endif %}
 </p>

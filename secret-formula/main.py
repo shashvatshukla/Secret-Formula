@@ -122,52 +122,56 @@ class Submitted(Webpage):
         fk = Key(urlsafe=fid)
         qnos = int(self.request.get("qnos"))
         encrypt_key = self.request.get("key")
-        charset = "\x20\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x3e\x3f\x40\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4d\x4e\x4f\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x5b\x5c\x5d\x5e\x5f\x60\x61\x62\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x7b\x7c\x7d\x7e"
-        iv = ""
-        for i in range(16):
-            iv+=random.choice(charset)
-        #iv = "1234567890123456" #for debugging 
-        r = Response(parent=fk)
-        r.subID = 1+gql("select subID from Response order by subID desc limit 1").get().subID
-        r.iv = iv
-        encryption_object = AES.new(encrypt_key, AES.MODE_CBC, r.iv)
-        r.put()
-        
-        to_add = []    # queue of entities to write to datastore
-        problemq = []   # invalid questions
-        
-        for i in range(qnos):
-            q = gql("select type, must from Question where ancestor is :1 and qno = :2", fk, i).get()
-            qtype = q.type
-            qmust = q.must
-            if(qtype == 2):
-                # check box, need to handle separately
-                ans = ""
-                for j in self.request.get_all(str(i)):
-                    ans += j + ","
-                if len(ans) > 0:
-                    ans = ans[:-1]
-            else:
-                ans = self.request.get(str(i))
-                if qmust and ans == '':
-                    problemq.append(i+1)
-            
-            ans += " " * (16-len(ans)%16) # make string a multiple of 16 letters for encryption
-            a = Answer(parent=r.key)
-            a.qno = i
-            
-            a.ans = (encryption_object.encrypt(ans)).encode('hex') # encrypt the answer here
-            
-            to_add.append(a)
-        
-        # put the datastore writes together, if something goes wrong beforehand we can skip this
-        if problemq:
-            r.key.delete()
+        probkey = None
+        problemq = []
+        if len(encrypt_key)%16:
+            probkey = encrypt_key
         else:
-            for i in to_add:
-                i.put()
+            charset = "\x20\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x3e\x3f\x40\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4d\x4e\x4f\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x5b\x5c\x5d\x5e\x5f\x60\x61\x62\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x7b\x7c\x7d\x7e"
+            iv = ""
+            for i in range(16):
+                iv+=random.choice(charset)
+            #iv = "1234567890123456" #for debugging 
+            r = Response(parent=fk)
+            r.subID = 1+gql("select subID from Response order by subID desc limit 1").get().subID
+            r.iv = iv
+            encryption_object = AES.new(encrypt_key, AES.MODE_CBC, r.iv)
+            r.put()
+            
+            to_add = []    # queue of entities to write to datastore
+            
+            for i in range(qnos):
+                q = gql("select type, must from Question where ancestor is :1 and qno = :2", fk, i).get()
+                qtype = q.type
+                qmust = q.must
+                if(qtype == 2):
+                    # check box, need to handle separately
+                    ans = ""
+                    for j in self.request.get_all(str(i)):
+                        ans += j + ","
+                    if len(ans) > 0:
+                        ans = ans[:-1]
+                else:
+                    ans = self.request.get(str(i))
+                    if qmust and ans == '':
+                        problemq.append(i+1)
+                
+                ans += " " * (16-len(ans)%16) # make string a multiple of 16 letters for encryption
+                a = Answer(parent=r.key)
+                a.qno = i
+                
+                a.ans = (encryption_object.encrypt(ans)).encode('hex') # encrypt_key the answer here
+                
+                to_add.append(a)
+            
+            # put the datastore writes together, if something goes wrong beforehand we can skip this
+            if problemq:
+                r.key.delete()
+            else:
+                for i in to_add:
+                    i.put()
         
-        super(Submitted, self).get({'pq': problemq})
+        super(Submitted, self).get({'key': probkey, 'pq': problemq})
         
 
 class ViewResponse(Webpage):
@@ -180,7 +184,7 @@ class ViewResponse(Webpage):
     
     def post(self):
         fid = self.request.get("id")
-        decrypt = self.request.get("key")
+        decrypt_key = self.request.get("key")
         fk = Key(urlsafe=fid)
         f = fk.get()
         # list of questions query
@@ -192,33 +196,34 @@ class ViewResponse(Webpage):
         
         errcount = 0
         
-        if decrypt:
-            for i in sorted(list(rq.iter()), key=lambda x: x.subID):
-                
-                decryption_object = AES.new(decrypt,AES.MODE_CBC, i.iv)
-                aq = gql("select * from Answer where ancestor is :1 order by qno", i.key)
-                
-                #tbl += [[j.ans for j in aq.iter()]] # when decryption doesnt work, debugging
-                
-                row = []
-                err = 0
-                
-                for j in aq.iter():
-                    try:
-                        row += [decryption_object.decrypt(j.ans.decode('hex'))]
-                        row[-1].encode('utf8')
-                    except UnicodeDecodeError:
-                        err = 1
-                        break
-                
-                if err == 0:
-                    tbl += [row]
-                else:
-                    errcount += 1
-                
-                
+        if decrypt_key:
+            if len(decrypt_key)%16:
+                errcount = -1
+            else:
+                for i in sorted(list(rq.iter()), key=lambda x: x.subID):
+                    
+                    decryption_object = AES.new(decrypt_key,AES.MODE_CBC, i.iv)
+                    aq = gql("select * from Answer where ancestor is :1 order by qno", i.key)
+                    
+                    #tbl += [[j.ans for j in aq.iter()]] # when decryption doesnt work, debugging
+                    
+                    row = []
+                    err = 0
+                    
+                    for j in aq.iter():
+                        try:
+                            row += [decryption_object.decrypt(j.ans.decode('hex'))]
+                            row[-1].encode('utf8')
+                        except UnicodeDecodeError:
+                            err = 1
+                            break
+                    
+                    if err == 0:
+                        tbl += [row]
+                    else:
+                        errcount += 1
         
-        super(ViewResponse, self).get({'fid': fid, 'key': decrypt, 'form': f, 'qns': qq, 'tbl': tbl, 'err': errcount})
+        super(ViewResponse, self).get({'fid': fid, 'key': decrypt_key, 'form': f, 'qns': qq, 'tbl': tbl, 'err': errcount})
 
 class Code(Webpage):
     page = 'Code.html'

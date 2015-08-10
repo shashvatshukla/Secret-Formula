@@ -5,16 +5,21 @@
 <title>Secret Formula</title>
 </head>
 <body>
-{% if pq|length > 0 %}
-	{% if pq|length == 1 %}
-	<p>There was 1 invalid response in the form you just submitted.
-	{% else %}
-	<p>There were {{pq|length}} invalid responses in the form you just submitted.
-	{% endif %} They could have been caused by leaving a question blank, when it was indicated as compulsory.</p>
-<p><b>Your response has not been recorded. Press the back button in your browser to edit and resubmit the form.</b></p>
-<p>The question(s) with invalid responses is/are: {{pq|join(', ')}}</p>
+{% if key %}
+	<p>The key you provided was invalid. You should have been given a key with 16 characters.</p>
+	<p><b>Your response has not been recorded. Press the back button in your browser to edit and resubmit the form.</b></p>
 {% else %}
-<p>Your submission has been successfully recorded. Thank you.</p>
+	{% if pq|length > 0 %}
+		{% if pq|length == 1 %}
+		<p>There was 1 invalid response in the form you just submitted.
+		{% else %}
+		<p>There were {{pq|length}} invalid responses in the form you just submitted.
+		{% endif %} They could have been caused by leaving a question blank, when it was indicated as compulsory.</p>
+	<p><b>Your response has not been recorded. Press the back button in your browser to edit and resubmit the form.</b></p>
+	<p>The question(s) with invalid responses is/are: {{pq|join(', ')}}</p>
+	{% else %}
+	<p>Your submission has been successfully recorded. Thank you.</p>
+	{% endif %}
 {% endif %}
 </body>
 </html>
