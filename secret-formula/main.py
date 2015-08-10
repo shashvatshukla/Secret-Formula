@@ -63,7 +63,7 @@ class FormEdit(Webpage):
             # change to metadata
             f = k.get()
             f.name = self.request.get("title")
-            #f.dl = self.request.get("enddate")
+            f.dl = datetime.datetime.strptime(self.request.get("dl"), "%Y-%m-%dT%H:%M")
             f.put()
             
         if t == 2:
@@ -106,8 +106,12 @@ class AnswerForm(Webpage):
     def get(self):
         fid = self.request.get("id")
         k = Key(urlsafe=fid)
-        qq = gql("select * from Question where ancestor is :1 order by qno", k)
-        super(AnswerForm, self).get({'form': k.get(), 'questions': qq})
+        f = k.get()
+        qq = None
+        late = f.dl < datetime.datetime.now()
+        if not late:
+            qq = gql("select * from Question where ancestor is :1 order by qno", k)
+        super(AnswerForm, self).get({'form': f, 'questions': qq, 'late': late})
 
 class Submitted(Webpage):
     page = 'Submit.html'
@@ -159,7 +163,6 @@ class Submitted(Webpage):
                 ans += " " * (16-len(ans)%16) # make string a multiple of 16 letters for encryption
                 a = Answer(parent=r.key)
                 a.qno = i
-                
                 a.ans = (encryption_object.encrypt(ans)).encode('hex') # encrypt_key the answer here
                 
                 to_add.append(a)

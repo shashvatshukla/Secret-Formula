@@ -24,10 +24,7 @@
 <br><br>
 <form method="post" action="editform">
 <p>Form Title: <input type="text" name="title" value="{{form.name}}"></p>
-
-<!-- <br><br>
-End Date: <input type="date" name="enddate" value="{{form.dl}}">
- -->
+<p>Deadline: <input type="datetime-local" name="dl" value="{{form.dl.strftime('%Y-%m-%dT%H:%M')~':00'}}"></p>
  
 <input type="hidden" name="id" value="{{form.key.urlsafe()}}">
 <input type="hidden" name="type" value="1">

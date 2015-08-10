@@ -16,46 +16,50 @@
 <h1>Form Title:  {{form.name}}</h1>
 <!-- <br>Form Deadline: {{form.dl}} -->
 <br><br>
-<form method="post" action="submitted">
-{% for q in questions %}
-<p>
-{% if q.must %}<b>(Compulsory)</b> {% endif %}{{(1+q.qno) ~ ". " ~ q.text}}<br>
-{% if q.type == 0 %}
-<input type="text" name="{{q.qno}}">
-<br>
-{% elif q.type == 1 %}
-
-	{% for i in q.options %}
-	<input type="radio" name="{{q.qno}}" value="{{i}}">{{i}}
+{% if late %}
+	<div class="alert alert-danger"><b>You are too late!</b> Submissions for this form have closed on {{form.dl.strftime('%d-%m-%Y at %H:%M hrs')}}.</div>
+{% else %}
+	<form method="post" action="submitted">
+	{% for q in questions %}
+	<p>
+	{% if q.must %}<b>(Compulsory)</b> {% endif %}{{(1+q.qno) ~ ". " ~ q.text}}<br>
+	{% if q.type == 0 %}
+	<input type="text" name="{{q.qno}}">
 	<br>
-	{% endfor %}
-
-{% elif q.type == 2 %}
-
-	{% for i in q.options %}
-	<input type="checkbox" name="{{q.qno}}" value="{{i}}">{{i}}
+	{% elif q.type == 1 %}
+	
+		{% for i in q.options %}
+		<input type="radio" name="{{q.qno}}" value="{{i}}">{{i}}
+		<br>
+		{% endfor %}
+	
+	{% elif q.type == 2 %}
+	
+		{% for i in q.options %}
+		<input type="checkbox" name="{{q.qno}}" value="{{i}}">{{i}}
+		<br>
+		{% endfor %}
+	
+	{% elif q.type == 3 %}
+	
+	<textarea class="FormElement" name="{{q.qno}}" style="width: 300px; height: 100px;"></textarea>
 	<br>
+	
+	{% endif %}
+	</p>
 	{% endfor %}
-
-{% elif q.type == 3 %}
-
-<textarea class="FormElement" name="{{q.qno}}" style="width: 300px; height: 100px;"></textarea>
-<br>
-
+	<br>
+	
+	<p>
+	Key (This should have been provided by the person who sent you this form)<br>
+	<input type="text" name="key">
+	</p>
+	
+	<input type="hidden" name="qnos" value="{{questions.count()}}">
+	<input type="hidden" name="id" value="{{form.key.urlsafe()}}">
+	
+	<p><input type="submit" class="btn btn-success" value="Submit"></p>
+	</form>
 {% endif %}
-</p>
-{% endfor %}
-<br>
-
-<p>
-Key (This should have been provided by the person who sent you this form)<br>
-<input type="text" name="key">
-</p>
-
-<input type="hidden" name="qnos" value="{{questions.count()}}">
-<input type="hidden" name="id" value="{{form.key.urlsafe()}}">
-
-<p><input type="submit" class="btn btn-success" value="Submit"></p>
-</form>
 </body>
 </html>
