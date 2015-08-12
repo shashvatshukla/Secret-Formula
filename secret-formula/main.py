@@ -23,6 +23,13 @@ class Main(Webpage):
     def get(self):
         super(Main, self).get();
 
+class Invalid(Webpage):
+    page = 'Invalid.html'
+    url = 'invalid'
+    
+    def get(self):
+        super(Invalid, self).get();
+
 class FormMgr(Webpage):
     page = 'FormsMgr.html'
     url = 'forms'
@@ -57,47 +64,51 @@ class FormEdit(Webpage):
         t = int(self.request.get("type"))
         fid = self.request.get("id")
         k = Key(urlsafe=fid)
-        qq = gql("select * from Question where ancestor is :1 order by qno", k)
         
-        if t == 1:
-            # change to metadata
-            f = k.get()
-            f.name = self.request.get("title")
-            f.dl = datetime.datetime.strptime(self.request.get("dl"), "%Y-%m-%dT%H:%M")
-            f.put()
-            
-        if t == 2:
-            # change to existing question
-            qk = Key(urlsafe=self.request.get("qid"))
-            qn = qk.get()
-            ntext = self.request.get("qtext")
-            ntype = int(self.request.get("qtype"))
-            nmust = self.request.get("comp") != ''
-            nopt = [i[:-1] if i[-1] == '\r' else i for i in self.request.get("options").split("\n") if i != '' and i != '\r']
-            # if nothing changed, we don't waste an unnecessary write
-            if qn.text != ntext or qn.type != ntype or qn.must != nmust or qn.options != nopt:
-                qn.text = ntext
-                qn.type = ntype
-                qn.must = nmust
-                qn.options = nopt
-                qn.put()
-
-        if t == 3:
-            # new question added
-            qn = Question(parent=Key(urlsafe=self.request.get("id")))
-            qn.text = self.request.get("qt")
-            qn.qno = int(self.request.get("qno"))
-            qn.must = False # defaults to non-compulsory
-            qn.type = 0     # defaults to simple text
-            qn.put()
-            
-        if t == 4:
-            # delete
-            fid = self.request.get("id")        
-            db.delete(fid)
-            self.redirect(FormMgr.url)
+        if k.parent().id() !=  users.get_current_user().nickname():
+            self.redirect(Invalid.url)
         else:
-            super(FormEdit, self).get({'type': t, 'form': k.get(), 'questions': qq})	
+            qq = gql("select * from Question where ancestor is :1 order by qno", k)
+            
+            if t == 1:
+                # change to metadata
+                f = k.get()
+                f.name = self.request.get("title")
+                f.dl = datetime.datetime.strptime(self.request.get("dl"), "%Y-%m-%dT%H:%M")
+                f.put()
+                
+            if t == 2:
+                # change to existing question
+                qk = Key(urlsafe=self.request.get("qid"))
+                qn = qk.get()
+                ntext = self.request.get("qtext")
+                ntype = int(self.request.get("qtype"))
+                nmust = self.request.get("comp") != ''
+                nopt = [i[:-1] if i[-1] == '\r' else i for i in self.request.get("options").split("\n") if i != '' and i != '\r']
+                # if nothing changed, we don't waste an unnecessary write
+                if qn.text != ntext or qn.type != ntype or qn.must != nmust or qn.options != nopt:
+                    qn.text = ntext
+                    qn.type = ntype
+                    qn.must = nmust
+                    qn.options = nopt
+                    qn.put()
+    
+            if t == 3:
+                # new question added
+                qn = Question(parent=Key(urlsafe=self.request.get("id")))
+                qn.text = self.request.get("qt")
+                qn.qno = int(self.request.get("qno"))
+                qn.must = False # defaults to non-compulsory
+                qn.type = 0     # defaults to simple text
+                qn.put()
+                
+            if t == 4:
+                # delete
+                fid = self.request.get("id")        
+                db.delete(fid)
+                self.redirect(FormMgr.url)
+            else:
+                super(FormEdit, self).get({'type': t, 'form': k.get(), 'questions': qq})	
 
 class AnswerForm(Webpage):
     page = 'Answer.html'
@@ -189,44 +200,47 @@ class ViewResponse(Webpage):
         fid = self.request.get("id")
         decrypt_key = self.request.get("key")
         fk = Key(urlsafe=fid)
-        f = fk.get()
-        # list of questions query
-        qq = gql("select * from Question where ancestor is :1 order by qno", fk)
-        fk = Key(urlsafe=fid)
-        # list of user responses query
-        rq = gql("select * from Response where ancestor is :1 order by subID desc", fk)
-        tbl = []
-        
-        errcount = 0
-        
-        if decrypt_key:
-            if len(decrypt_key)%16:
-                errcount = -1
-            else:
-                for i in sorted(list(rq.iter()), key=lambda x: x.subID):
-                    
-                    decryption_object = AES.new(decrypt_key,AES.MODE_CBC, i.iv)
-                    aq = gql("select * from Answer where ancestor is :1 order by qno", i.key)
-                    
-                    #tbl += [[j.ans for j in aq.iter()]] # when decryption doesnt work, debugging
-                    
-                    row = []
-                    err = 0
-                    
-                    for j in aq.iter():
-                        try:
-                            row += [decryption_object.decrypt(j.ans.decode('hex'))]
-                            row[-1].encode('utf8')
-                        except UnicodeDecodeError:
-                            err = 1
-                            break
-                    
-                    if err == 0:
-                        tbl += [row]
-                    else:
-                        errcount += 1
-        
-        super(ViewResponse, self).get({'fid': fid, 'key': decrypt_key, 'form': f, 'qns': qq, 'tbl': tbl, 'err': errcount})
+        if fk.parent().id() !=  users.get_current_user().nickname():
+            self.redirect(Invalid.url)
+        else:
+            f = fk.get()
+            # list of questions query
+            qq = gql("select * from Question where ancestor is :1 order by qno", fk)
+            fk = Key(urlsafe=fid)
+            # list of user responses query
+            rq = gql("select * from Response where ancestor is :1 order by subID desc", fk)
+            tbl = []
+            
+            errcount = 0
+            
+            if decrypt_key:
+                if len(decrypt_key)%16:
+                    errcount = -1
+                else:
+                    for i in sorted(list(rq.iter()), key=lambda x: x.subID):
+                        
+                        decryption_object = AES.new(decrypt_key,AES.MODE_CBC, i.iv)
+                        aq = gql("select * from Answer where ancestor is :1 order by qno", i.key)
+                        
+                        #tbl += [[j.ans for j in aq.iter()]] # when decryption doesnt work, debugging
+                        
+                        row = []
+                        err = 0
+                        
+                        for j in aq.iter():
+                            try:
+                                row += [decryption_object.decrypt(j.ans.decode('hex'))]
+                                row[-1].encode('utf8')
+                            except UnicodeDecodeError:
+                                err = 1
+                                break
+                        
+                        if err == 0:
+                            tbl += [row]
+                        else:
+                            errcount += 1
+            
+            super(ViewResponse, self).get({'fid': fid, 'key': decrypt_key, 'form': f, 'qns': qq, 'tbl': tbl, 'err': errcount})
 
 class Code(Webpage):
     page = 'Code.html'
@@ -239,7 +253,7 @@ class Code(Webpage):
         
     
 
-pagec = (Main, FormMgr, FormEdit, AnswerForm, Submitted, ViewResponse, Code)
+pagec = (Main, Invalid, FormMgr, FormEdit, AnswerForm, Submitted, ViewResponse, Code)
 pages = [('/' + i.url, i) for i in pagec]
 
 
