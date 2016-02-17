@@ -15,9 +15,24 @@
 </head>
 <body>
 
-Main Page
+<h1>Welcome to Secret Formula</h1>
+<h2>a secure online form service</h2>
+
+<br><br><br>
+
+<h3>What are we?</h3>
+<p>Secret Formula is your regular form creation service, except it's legal. Since the Personal Data Protection Act was implemented in Singapore, other form creation services are unusable in the context of a school because they simply do not protect the personal data from the creators of these services. That's where Secret Formula is different. Using the principle of Symmetric Key Encryption, users of our app will be able to communicate their personal particulars via forms without us, the service providers, being able to access our data. This is also great for people concerned about privacy in other countries.
+<p><a href="https://www.pdpc.gov.sg/legislation-and-guidelines/overview">More about the PDPA</a>
+
+<h3>How does it work?</h3>
+<p>The way it works is that the form manager creates a form and sends a link to the respondents along with a key. Since this key is communicated between the form manager and the respondent via there own means of communication, there is no way for us to have access to this key. The respondents then use this key to encrypt their data when they fill the form and send it over to the form manager. In order to read the data, the form manager also has to use that same key (hence, Symmetric Key Encryption) to decrypt the results.
+<p>We have used AES encryption together with Cipher Block Chaining, which are very trusted techniques in order to ensure maximum security. As our whole project will be open source the transparency will ensure that it works as intended. In the event that our current implementation is not trusted we can make changes to have our users carry out the encryption and decryption on their computers locally instead of on the internet where we can be suspected to be stealing their keys.
+
+<p><a href="http://github.com/shashvatshukla/Secret-Formula">Have a look at our source code!</a>
+
+<br><br><br>
 <form action="forms" method="get">
-<button>My Forms</button>
+<button>Get Started</button>
 </form>
-</body>
 </html>
+</body>

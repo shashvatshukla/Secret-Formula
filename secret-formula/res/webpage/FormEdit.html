@@ -42,7 +42,7 @@
 <form method="post" action="editform">
 <input type="text" name="qtext" class="form-control" placeholder="Question Text" value="{{q.text}}">
 <br>
-<input type="checkbox" name="comp" value="True" {% if q.must and not ((q.type == 1 or q.type == 2) and q.choices|length == 0) %} checked {% endif %}{% if (q.type == 1 or q.type == 2) and q.choices|length == 0 %} disabled {% endif %}>Compulsory
+<input type="checkbox" name="comp" value="True" {% if q.must and not ((q.type == 1 or q.type == 2) and q.choices|length == 0) %} checked {% endif %} {% if (q.type == 1 or q.type == 2) and q.options|length == 0 %} disabled {% endif %}>Compulsory
 <div class="btn-group" data-toggle="buttons">
 <label class="btn btn-primary">
 <input type="radio" name="qtype" value="0" {% if q.type == 0 %}checked{% endif %}>Simple Text
@@ -60,7 +60,7 @@
 {% if q.text == '' %}
 	<br><br><br><div class="alert alert-warning">Warning: This question has no question text.</div>
 {% endif %}
-{% if (q.type == 1 or q.type == 2) and q.choices|length == 0 %}
+{% if (q.type == 1 or q.type == 2) and q.options|length == 0 %}
 	<br><div class="alert alert-danger">Alert: This multiple-choice question has no options. You cannot make a question compulsory when there are no options.</div>
 {% endif %}
 <p>
