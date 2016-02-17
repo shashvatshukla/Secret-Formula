@@ -11,6 +11,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
+<link rel="stylesheet" type="text/css" href="stylesheets/styles.css" />
 
 </head>
 <body>
@@ -61,7 +62,7 @@
 	<br><br><br><div class="alert alert-warning">Warning: This question has no question text.</div>
 {% endif %}
 {% if (q.type == 1 or q.type == 2) and q.options|length == 0 %}
-	<br><div class="alert alert-danger">Alert: This multiple-choice question has no options. You cannot make a question compulsory when there are no options.</div>
+	<br><br><div class="alert alert-danger">Alert: This multiple-choice question has no options. You cannot make a question compulsory when there are no options.</div>
 {% endif %}
 <p>
 {% if q.type == 1 or q.type == 2 %}

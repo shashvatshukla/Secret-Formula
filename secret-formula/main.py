@@ -126,7 +126,7 @@ class AnswerForm(Webpage):
 
 class Submitted(Webpage):
     page = 'Submit.html'
-    url = 'submitted'
+    url = 'submit'
     
     def get(self):
         pass
